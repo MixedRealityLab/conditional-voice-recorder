@@ -1,9 +1,14 @@
 <h1 align="center">
-	Conditional Voice Recorder
+	Conditional Voice Recorder (CVR)
 </h1>
 
 A system that listens for a hotword and begins audio capture. Configured to run on a Raspberry Pi 3, may work on other 
 platforms. Makes use of the [Snowboy Hotword Detection system](https://snowboy.kitt.ai/).
+
+
+## Publication using the CVR
+The CVR is used in the following publications:
+* Martin Porcheron, Joel E. Fischer, Stuart Reeves, and Sarah Sharples. 2018. Voice Interfaces in Everyday Life. In _Proceedings of the 2018 ACM Conference on Human Factors in Computing Systems_ (CHI '18). ACM, New York, NY, USA.  https://doi.org/10.1145/3173574.3174214
 
 ## Setup
 * Follow the steps to install the required pre-requisites from the 
