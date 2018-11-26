@@ -14,6 +14,7 @@ class Detector(object):
     microphone input stream.
 
     :param decoder_model: decoder model file path; stirng or list of strings
+    :param int led_running_pin: BCM pin for the running LED
     :param int led_listening_pin: BCM pin for the listening LED
     :param int led_recording_pin: BCM pin for the recording LED
     :param sensitivity: decoder sensitivity, a float of a list of floats.
@@ -27,6 +28,7 @@ class Detector(object):
     """
     def __init__(self,
         decoder_model,
+        led_running_pin=24,
         led_listening_pin=15,
         led_recording_pin=18,
         sensitivity=[],
@@ -40,6 +42,7 @@ class Detector(object):
 
         GPIO.setmode(GPIO.BCM)
 
+        self._led_running = LED(led_running_pin, 0)
         self._led_listening = LED(led_listening_pin, 0)
         self._led_recording = LED(led_recording_pin, 0)
 
@@ -231,25 +234,31 @@ class Detector(object):
 
         :return: None
         """
+        self._led_running.set(True)
         self._led_listening.set(False)
         self._led_recording.set(False)
 
         while not self._ready:
+            self._led_running.toggle()
             self._led_listening.toggle()
             self._led_recording.toggle()
             time.sleep(0.1)
 
+        self._led_running.set(True)
         self._led_listening.set(True)
         self._led_recording.set(False)
 
         for i in range(0, 10):
+            self._led_running.toggle()
             self._led_listening.toggle()
             self._led_recording.toggle()
             time.sleep(0.1)
 
+        self._led_running.set(True)
         self._led_listening.set(True)
         self._led_recording.set(True)
         time.sleep(1)
+        self._led_running.set(True)
         self._led_listening.set(False)
         self._led_recording.set(False)
 

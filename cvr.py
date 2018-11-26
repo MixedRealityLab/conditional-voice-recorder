@@ -69,6 +69,7 @@ if __name__ == "__main__":
     detector = Detector(decoder_model=args.model,
         sensitivity=sensitivity,
         audio_gain=args.gain,
+        led_running_pin=24,
         led_listening_pin=15,
         led_recording_pin=18,
         continue_recording=args.continue_recording,

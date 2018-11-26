@@ -15,7 +15,7 @@ _If you use the CVR in your project or publication, we'd be grateful if you coul
 ## Setup
 * The CVR features to LEDs and 1 button, all connected to the [GPIO pinout](https://pinout.xyz) of the Raspberry Pi
   - Each LED and button should be connected to a normal pin and a ground pin
-  - You can customise which pins are used in `cvr.py`, although by default they are listening (15), recording (18), and button (27)
+  - You can customise which pins are used in `cvr.py`, although by default they are listening (15), recording (18), running cvr code (24), and button (27)
 * Follow the steps to install the required pre-requisites from the 
   [GitHub repository](https://github.com/kitt-ai/snowboy#ubunturaspberry-pi)  
 * You may need to install PIP at some point (not currently given in the setup instructions): 
@@ -31,6 +31,13 @@ _If you use the CVR in your project or publication, we'd be grateful if you coul
   - You could alternatively fix the 'Makefile' by changing the line `SWIG := swig` to `SWIG := swig3.0`, however at 
     time of writing, the Debian stable version of SWIG was not up-to-date enough
 * Build the Python SWIG library by running `make`
+
+### PIN layout
+The following is the circuits for the various components (by default):
+* 6 (gnd) -> listening led -> resister (yellow, purple, brown gold) -> 10 (gpio 15)
+* 12 (gpio 18) -> recording led -> resister (yellow, purple, brown gold) -> 14 (gnd)
+* 18 (gpio 24) -> running cvr code led -> resister (yellow, purple, brown gold) -> listening led -> 20 (gnd)
+* 13 (gpio 27) -> button -> 9 (gnd)
 
 ### Running an Snowboy Example
 * Download/Generate a hotword model from the [Snowboy Website](https://snowboy.kitt.ai) (this requires Chrome or 
