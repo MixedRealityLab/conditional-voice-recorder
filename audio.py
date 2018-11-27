@@ -26,6 +26,8 @@ class AudioHandler(object):
     :param bool continue_recording: continue recording on repeated utterances of
                                 of the hotword.
     :param string output_dir: Directory to save recordings to.
+    :param bool delete_active_recording: Delete an active recording if 
+                                interrupted
     """
     def __init__(self,
         decoder_model,
@@ -33,7 +35,8 @@ class AudioHandler(object):
         sensitivity=[],
         audio_gain=1,
         continue_recording=False,
-        output_dir="."):
+        output_dir=".",
+        delete_active_recording=False):
 
         self.is_running = False
         self.is_interrupted = False
@@ -89,6 +92,7 @@ class AudioHandler(object):
 
         self._enable_continue_recording = continue_recording
         self._output_dir = output_dir
+        self._delete_active_recording = delete_active_recording
 
         Log.debug(self._tag, "AudioHandler created")
 
@@ -166,7 +170,11 @@ class AudioHandler(object):
                     continue
                 elif is_recording:
                     Log.info(self._tag, "Continue recording")
-                    self._timer.cancel()
+
+                    try:
+                        self._timer.cancel()
+                    except AttributeError:
+                        pass
                     self.instance_recorders[-1].extend_desired_length(self._record_after)
 
                     if self._continue_recording_callback <> None:
@@ -189,7 +197,8 @@ class AudioHandler(object):
                         num_channels=self.detector.NumChannels(),
                         sample_rate=self.detector.SampleRate(),
                         bytes_per_sample=self._bytes_per_sample,
-                        dir=self._output_dir))
+                        dir=self._output_dir,
+                        delete_active_recording=self._delete_active_recording))
 
                     self.instance_recorders[-1].start()
 

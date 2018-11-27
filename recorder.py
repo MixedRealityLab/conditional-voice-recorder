@@ -113,6 +113,8 @@ class InstanceRecorder(object):
 	:param int bytes_per_sample: bytes per sample.
 	:param dir: directory to save files to
 	:param String file_prefix: prefix of files to save to.
+    :param bool delete_active_recording: Delete an active recording if 
+                                interrupted
 	"""
 	def __init__(self,
 		buf_before,
@@ -121,11 +123,13 @@ class InstanceRecorder(object):
 		sample_rate=16000,
 		bytes_per_sample=2,
 		dir=TOP_DIR,
-		file_prefix="recording-"):
+		file_prefix="recording-",
+		delete_active_recording=False):
 		self.buf_before=buf_before
 		self.buf_after=buf_after
 		self._bytes_per_second=num_channels*sample_rate*bytes_per_sample
 		self._file_prefix=file_prefix
+		self._delete_active_recording=delete_active_recording
 
 		self.clean_up = False
 		self._will_stop_capture=False
@@ -136,7 +140,8 @@ class InstanceRecorder(object):
 
 		# File setup
 		self.filename =  "%s%d.wav" % (self._file_prefix, int(time.time()))
-		self._file = wave.open(os.path.join(dir, self.filename), "w")
+		self.filepath = os.path.join(dir, self.filename)
+		self._file = wave.open(self.filepath, "w")
 		self._file.setnchannels(num_channels)
 		self._file.setframerate(sample_rate)
 		self._file.setsampwidth(bytes_per_sample)
@@ -227,5 +232,13 @@ class InstanceRecorder(object):
 			time.sleep(3)
 
 		self._file.close()
-		Log.debug(self._tag, "Written %.2f seconds of audio in %s" % (self._time_written, self.filename))
-		self.clean_up = True
+
+		if self._is_writing_interrupted and self._delete_active_recording:
+			try:
+				os.remove(self.filepath)
+				Log.debug(self._tag, "Writing of %s interrupted after %.2f seconds of audio so file was deleted" % (self.filename, self._time_written))
+			except OSError:
+				Log.error(self._tag, "Writing of %s interrupted after %.2f seconds of audio, but COULDNT DELETE" % (self.filename, self._time_written))
+		else:
+			Log.debug(self._tag, "Written %.2f seconds of audio in %s" % (self._time_written, self.filename))
+			self.clean_up = True

@@ -25,6 +25,8 @@ class Detector(object):
     :param bool continue_recording: continue recording on repeated utterances of
                                 of the hotword.
     :param string output_dir: Directory to save recordings to.
+    :param bool delete_active_recording: Delete an active recording if 
+                                interrupted
     """
     def __init__(self,
         decoder_model,
@@ -34,7 +36,8 @@ class Detector(object):
         sensitivity=[],
         audio_gain=1,
         continue_recording=False,
-        output_dir="."):
+        output_dir=".",
+        delete_active_recording=False):
 
         self._is_running = False
         self._is_interrupted = False
@@ -57,7 +60,8 @@ class Detector(object):
             sensitivity=sensitivity,
             audio_gain=audio_gain,
             output_dir=output_dir,
-            continue_recording=continue_recording)
+            continue_recording=continue_recording,
+            delete_active_recording=delete_active_recording)
 
         signal.signal(signal.SIGINT, self.interrupt)
         Log.debug(self._tag, "Detector created")

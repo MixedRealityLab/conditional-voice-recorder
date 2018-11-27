@@ -49,6 +49,10 @@ if __name__ == "__main__":
         dest='continue_recording',
         default=True,
         action='store_true')
+    parser.add_argument("--delete-active",
+        help="Delete active recording if button pressed during recording.",
+        dest='delete_active_recording',
+        action='store_false')
     parser.add_argument("--no-continue",
         help="Don't continue recording on repeat of hotword.",
         dest='continue_recording',
@@ -73,7 +77,8 @@ if __name__ == "__main__":
         led_listening_pin=15,
         led_recording_pin=18,
         continue_recording=args.continue_recording,
-        output_dir=args.output)
+        output_dir=args.output,
+        delete_active_recording=args.delete_active_recording)
 
     Log.debug("__main__", "Will record %d seconds before and %d seconds after hotword" % (args.before, args.after))
     detector.wait_on_button(button_pin=27,
