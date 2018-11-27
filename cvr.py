@@ -16,6 +16,17 @@ def writeable_dir(prospective_dir):
     else:
         raise argparse.ArgumentTypeError("writeable_dir:{0} is not a writeable dir".format(prospective_dir))
 
+def wav_file(prospective_file):
+    """
+    Is a WAV file.
+    """
+    if not os.path.isfile(prospective_file):
+        raise argparse.ArgumentTypeError("wav_file:{0} is not a valid path".format(prospective_file))
+    elif os.access(prospective_file, os.R_OK) and os.path.splitext(prospective_file)[1].upper() == ".WAV":
+        return prospective_file
+    else:
+        raise argparse.ArgumentTypeError("wav_file:{0} is not a readable WAV file".format(prospective_file))
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("model",
@@ -44,6 +55,11 @@ if __name__ == "__main__":
         help="Output directory for audio recordings.",
         default=".",
         type=writeable_dir)
+    parser.add_argument("--audio-beep",
+        help="WAV file to play on commencement of recording",
+        dest='audio_beep',
+        default=None,
+        type=wav_file)
     parser.add_argument("--continue", "-c",
         help="Continue recording on repeat of hotword.",
         dest='continue_recording',
@@ -78,7 +94,8 @@ if __name__ == "__main__":
         led_recording_pin=18,
         continue_recording=args.continue_recording,
         output_dir=args.output,
-        delete_active_recording=args.delete_active_recording)
+        delete_active_recording=args.delete_active_recording,
+        on_beep_audio_file=args.audio_beep)
 
     Log.debug("__main__", "Will record %d seconds before and %d seconds after hotword" % (args.before, args.after))
     detector.wait_on_button(button_pin=27,

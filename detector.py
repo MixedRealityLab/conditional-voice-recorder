@@ -5,6 +5,7 @@ import RPi.GPIO as GPIO
 from led import LED
 from log import Log
 from audio import AudioHandler
+from beep import BeepHandler
 
 class Detector(object):
     _tag = "detector"
@@ -27,6 +28,8 @@ class Detector(object):
     :param string output_dir: Directory to save recordings to.
     :param bool delete_active_recording: Delete an active recording if 
                                 interrupted
+    :param str on_beep_audio_file: Path to valid audio file to play when 
+                                recording starts
     """
     def __init__(self,
         decoder_model,
@@ -37,7 +40,8 @@ class Detector(object):
         audio_gain=1,
         continue_recording=False,
         output_dir=".",
-        delete_active_recording=False):
+        delete_active_recording=False,
+        on_beep_audio_file=None):
 
         self._is_running = False
         self._is_interrupted = False
@@ -62,6 +66,12 @@ class Detector(object):
             output_dir=output_dir,
             continue_recording=continue_recording,
             delete_active_recording=delete_active_recording)
+
+        if on_beep_audio_file is None:
+            self.beep_handler = None
+        else:
+            self.beep_handler = BeepHandler(
+                on_beep_audio_file=on_beep_audio_file)
 
         signal.signal(signal.SIGINT, self.interrupt)
         Log.debug(self._tag, "Detector created")
@@ -209,6 +219,10 @@ class Detector(object):
         Log.debug(self._tag, "Will terminate AudioHandler")
         self.audio_handler.terminate()
 
+        if self.beep_handler is not None:
+            Log.debug(self._tag, "Will terminate BeepHandler")
+            self.beep_handler.terminate()
+
         Log.debug(self._tag, "Will clean up GPIO")
         self._led_listening.set(False)
         self._led_recording.set(False)
@@ -276,6 +290,10 @@ class Detector(object):
         :return: None
         """
         self._led_recording.set(True)
+        try:
+            self.beep_handler.play()
+        except AttributeError:
+            pass
 
     def _stop_recording(self):
         """
