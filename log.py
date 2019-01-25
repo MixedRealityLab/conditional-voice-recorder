@@ -20,7 +20,7 @@ class Log(object):
         "error": "\033[1;33;40m", # yellow
         "warning": "\033[1;35;40m", # purple
         "info": "\033[1;37;40m", # white
-        "debug": "\033[1;30;40m" # grey  
+        "debug": "\033[1;37;40m" # grey
     }
 
     @staticmethod
