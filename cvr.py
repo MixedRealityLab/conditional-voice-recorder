@@ -68,7 +68,7 @@ if __name__ == "__main__":
     parser.add_argument("--delete-active",
         help="Delete active recording if button pressed during recording.",
         dest='delete_active_recording',
-        action='store_false')
+        action='store_true')
     parser.add_argument("--no-continue",
         help="Don't continue recording on repeat of hotword.",
         dest='continue_recording',
