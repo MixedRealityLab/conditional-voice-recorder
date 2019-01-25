@@ -171,7 +171,7 @@ class InstanceRecorder(object):
 
 	def capture_stopped(self):
 		"""Stopped extending the buffer with new data (or will stop)"""
-		return self._will_stop_capture
+		return self._will_stop_capture or self._is_writing_interrupted
 
 	def extend_desired_length(self,desired_length):
 		"""
