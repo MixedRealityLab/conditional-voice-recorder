@@ -170,6 +170,8 @@ class AudioHandler(object):
                     continue
                 elif is_recording:
                     Log.info(self._tag, "Continue recording")
+                    Log.info(self._tag, "has_recorder=%s" % has_recorder)
+                    Log.info(self._tag, "last_stopped_recording=%s" % self.instance_recorders[-1].capture_stopped())
 
                     try:
                         self._timer.cancel()
@@ -219,10 +221,12 @@ class AudioHandler(object):
         """
         Log.debug(self._tag, "Interrupt triggered")
         self.is_interrupted = True
+        self.is_recording = False
         self.detector_buffer.clear()
-        for instance_recorder in self.instance_recorders:
+        for idx, instance_recorder in enumerate(self.instance_recorders):
             try:
                 instance_recorder.interrupt()
+                del self.instance_recorders[idx]
             except AttributeError:
                 pass
 
